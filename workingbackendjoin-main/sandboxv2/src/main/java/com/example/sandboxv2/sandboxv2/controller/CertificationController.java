@@ -64,7 +64,7 @@ public class CertificationController {
             byte[] bytes = certificate_file.getBytes();
             String originalFilename = certificate_file.getOriginalFilename();
             String filenameWithoutPrefix = originalFilename.startsWith("PDF") ? originalFilename.substring(3) : originalFilename;
-            Path path = Paths.get("C:\\Users\\vsbu\\Desktop\\workingbackendjoin-main\\workingbackendjoin-main\\certGenV2-main\\certGenV2-main\\genCert\\public\\PDF\\" + filenameWithoutPrefix);
+            Path path = Paths.get("C:\\Users\\vsbu\\Desktop\\workingbackendjoin-main\\Myprojects\\workingbackendjoin-main\\certGenV2-main\\certGenV2-main\\genCert\\public\\PDF\\" + filenameWithoutPrefix);
             Files.write(path, bytes);
 
             QuizTaken quizTaken = quizTakenService.getQuizTakenId(quiztkn_ID); // Assuming you have a service to find QuizTaken by ID

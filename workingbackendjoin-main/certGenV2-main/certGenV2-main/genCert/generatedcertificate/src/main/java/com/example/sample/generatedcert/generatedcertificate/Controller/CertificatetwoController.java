@@ -36,7 +36,7 @@ public class CertificatetwoController {
             byte[] bytes = file.getBytes();
             String originalFilename = file.getOriginalFilename();
             String filenameWithoutPrefix = originalFilename.startsWith("PDF") ? originalFilename.substring(3) : originalFilename;
-            Path path = Paths.get("C:\\Users\\vsbu\\Downloads\\certGenV2-main\\certGenV2-main\\genCert\\public\\PDF\\" + filenameWithoutPrefix);
+            Path path = Paths.get("C:\\Users\\vsbu\\Desktop\\workingbackendjoin-main\\Myprojects\\workingbackendjoin-main\\certGenV2-main\\certGenV2-main\\genCert\\public\\PDF\\" + filenameWithoutPrefix);
             Files.write(path, bytes);
 
             // Save certificate data to database

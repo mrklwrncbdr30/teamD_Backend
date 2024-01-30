@@ -9,7 +9,7 @@ const CertificateGenerator = () => {
   useEffect(() => {
     const loadQuiz = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/quizTkn/byUserId/2");
+        const response = await fetch("http://localhost:8080/api/quizTkn/byUserId/6");
         if (!response.ok) {
           throw new Error("Failed to fetch quiz data");
         }
@@ -22,7 +22,7 @@ const CertificateGenerator = () => {
     loadQuiz();
   }, []);
 
-  // console.log(quiz[0].quiztknID)
+    // console.log(quiz[0].quiztknID)
   const generateCertificate = async () => {
     console.log(quiz)
     if (!quiz) {
@@ -30,10 +30,22 @@ const CertificateGenerator = () => {
       return;
     }
 
+    //Check if the user passed or failed the course to generate the certificate 01/30/2023
+    const targetScore = quiz[0].quiz_score;
     const name = quiz[0].users.full_name;
     const instructor = quiz[0].quiz.course.instructor.full_name;
     const course = quiz[0].quiz.course.title;
     const quiztknId = quiz[0].quiztknID;
+    const courseid = quiz[0].quiz.course.courseID;
+
+
+    // Check if the target score is greater than or equal to 80
+    const isPass = targetScore >= 80;
+    const resultText = isPass ? 'Pass' : 'Failed';
+    if (!isPass) {
+      console.log('The quiz result is a failure. The certificate will not be generated.');
+      return;
+    }
 
     const doc = new jsPDF({
       orientation: 'landscape',
@@ -72,19 +84,36 @@ const CertificateGenerator = () => {
     doc.setFontSize(11.3);
     doc.setTextColor(0, 0, 0);
     doc.text(`Batch_55-${serialNumber}`, 85, 158, { align: 'left' });
+    
+    //Date Issued 01/30/2024
+    const currentDate = new Date();
+    const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+    const cDate = new Date();
+   
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    const formattedDateIssued = cDate.toLocaleDateString(undefined, options);
+   
+    doc.setFontSize(17);
+    doc.text(`${formattedDateIssued}`, 148, 128, { align: 'right' });
+   
+    doc.setFontSize(10);
+    doc.text(formattedDate, 87, 154, { align: 'right' });
+    
+    //Course ID 01/30/2024
+    doc.text(`${courseid}`, 75, 163, { align: 'right' });
 
-    // Save the PDF file to send to the backend
+    // Save the PDF file to send to the backend 01/29/2024
     const pdfFile = new File([doc.output('blob')], `${name}-${course}.pdf`, { type: 'application/pdf' });
 
-    // Create form data to send the file to the backend
+    // Create form data to send the file to the backend 01/29/2024
     const formDataToSend = new FormData();
     formDataToSend.append('serial_no', `Batch_55-${serialNumber}`);
     formDataToSend.append('file', pdfFile);
     formDataToSend.append('date_issued', "2024-01-25");
-    formDataToSend.append('criteria', "test");
+    formDataToSend.append('criteria', isPass);
     formDataToSend.append('quiztkn_ID', quiztknId);
 
-    // Send the PDF file to the backend
+    // Send the PDF file to the backend 01/28/2024
     fetch('http://localhost:8080/api/certifications', {
       method: 'POST',
       body: formDataToSend,
@@ -123,5 +152,6 @@ const CertificateGenerator = () => {
     </div>
   );
 };
+
 
 export default CertificateGenerator;
